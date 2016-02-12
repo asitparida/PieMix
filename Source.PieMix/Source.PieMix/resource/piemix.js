@@ -27,8 +27,8 @@
             scope: {
                 slices: '='
             },
-            templateUrl: 'resource/piemix.html',
-            controller: ["$scope", "$timeout", function ($scope, $timeout) {
+            templateUrl: 'template/piemix/template.html',
+            controller: ["$scope", "$timeout", "$element", function ($scope, $timeout, $element) {
                 var self = this;
                 this.baseRadius = 100;
                 this.radiusIncrementFactor = 0.66;
@@ -80,7 +80,9 @@
                         var _degEnd = _degStart + _deg;
                         //calculate start point and end point for arc
                         var _effectiveDeg = _degStart + _deg + (typeof _slice.degStart !== 'undefined' && _slice.degStart != null && _slice.degStart != {} ? _slice.degStart : 0);
+                        var _midDeg = _degStart + ((_effectiveDeg - _degStart) / 2);
                         var startXY = self._generateCoordinates(_degStart, _rad, self.centerXY);
+                        var midXY = self._generateCoordinates(_midDeg, _rad, self.centerXY);
                         var endXY = self._generateCoordinates(_effectiveDeg, _rad, self.centerXY);
                         //Assigningg path coeff
                         var _pathCoeff = 0;
@@ -93,6 +95,7 @@
                         _slice.degStart = _degEnd - _deg;
                         _slice.degEnd = _degEnd;
                         _slice.startXY = startXY;
+                        _slice.midXY = midXY;
                         _slice.endXY = endXY;
                         _slice.pathCoeff = _pathCoeff;
                         _slice.activecolor = _slice.color;
@@ -143,12 +146,39 @@
                     return { 'x': self._maxRad + (pad * 2), 'y': self._maxRad + (pad * 2) };
                 }
 
+                self._drawHelpBoxes = function () {
+                    var ctr = 0;
+                    var _minBoxHeight = 50;
+                    var _pies = _.sortBy(angular.copy(self.generatedPies), function (_slice) { return -_slice.priority });
+                    _.each(_pies, function (_slice) {
+                        _slice.helpBoxX = self.centerXY.x + 60 + self._maxRad;
+                        _slice.helpBoxY = ctr + 30;
+                        _slice.fillOpacity = 1;
+                        ctr = ctr + _minBoxHeight;
+                        var _actSlice = _.find(self.generatedPies, function (_sl) { return _sl._uid.localeCompare(_slice._uid) == 0; })
+                        if (typeof _actSlice !== 'undefined' && _actSlice != null && _actSlice != {}) {
+                            _actSlice.helpBoxX = _slice.helpBoxX;
+                            _actSlice.textBoxX = _slice.helpBoxX + 24;
+                            _actSlice.helpBoxY = _slice.helpBoxY;
+                            _actSlice.textBoxY = _slice.helpBoxY + 12;
+                            _actSlice.fillOpacity = _slice.fillOpacity;
+                            var _stpoint = { 'x': _slice.helpBoxX + 70, 'y': _slice.helpBoxY - 8 };
+                            var _midpoint = { 'x': _slice.helpBoxX - 70, 'y': _slice.helpBoxY - 8 };
+                            var _endPoint = _actSlice.midXY;
+                            var _ptr = _endPoint.x + ',' + _endPoint.y + ' ' + _midpoint.x + ',' + _midpoint.y + ' ' + _stpoint.x + ',' + _stpoint.y;
+                            _actSlice.ptr = _ptr;
+                        }
+
+                    });
+                }
+
                 self._startGenerating = function (slices) {
                     self.generatedPies = [];
                     self.centerXY = self._getCenterXY(slices, 5);
+                    self.svgHolderWidth = self.svgWidth = (2 * self._maxRad) + 200;
+                    self.svgHolderHeight = self.svgHeight = (2 * self._maxRad);
                     self._generatePies(slices, 1, null);
-                    self.svgHeight = self.svgWidth = (2 * self._maxRad);
-                    console.log(self.generatedPies);
+                    $timeout(self._drawHelpBoxes, 500);
                 }
 
                 self.click = function (data) {
@@ -158,14 +188,14 @@
             }],
             controllerAs: 'piemixctrl',
             bindToController: true,
-            replace:true,
+            replace: true,
             link: function (scope, element, attrs, ctrl) {
                 scope.$watch(function (scope) {
                     return scope.slices;
                 }, function (value) {
-                    console.log(ctrl);
                     ctrl._startGenerating(ctrl.slices);
                 });
+
             }
         };
     })
