@@ -6,6 +6,9 @@
     svg {
         path {
             cursor: pointer;
+            -moz-transition: fill 0.3s linear 0s;
+            -o-transition: fill 0.3s linear 0s;
+            -webkit-transition: fill 0.3s linear 0s;
             transition: fill 0.3s linear 0s;
         }
 
@@ -19,6 +22,17 @@
 
         rect {
             cursor: pointer;
+            -moz-transition: fill 0.3s linear 0s;
+            -o-transition: fill 0.3s linear 0s;
+            -webkit-transition: fill 0.3s linear 0s;
+            transition: fill 0.3s linear 0s;
+        }
+
+        polyline {
+            -moz-transition: stroke-opacity 0.3s linear 0s;
+            -o-transition: stroke-opacity 0.3s linear 0s;
+            -webkit-transition: stroke-opacity 0.3s linear 0s;
+            transition: stroke-opacity 0.3s linear 0s;
         }
     }
 }

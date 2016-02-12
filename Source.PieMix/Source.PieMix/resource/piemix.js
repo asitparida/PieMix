@@ -21,18 +21,19 @@
     }
 
     angular.module('piemix.modules', ['ngSanitize', 'ui.bootstrap'])
-    .directive("pieMix", function () {
+    .directive("pieMix", ['$parse', function ($parse) {
         return {
             restrict: 'AEC',
             scope: {
-                slices: '='
+                slices: '=',
+                baseRadius: "=",
+                radiusIncrementFactor: "=",
+                gapToLabel: "="
             },
             templateUrl: 'template/piemix/template.html',
-            controller: ["$scope", "$timeout", "$element", function ($scope, $timeout, $element) {
+            //templateUrl: 'resource/piemix.html',
+            controller: ["$scope", "$timeout", "$element", "$attrs", "$parse", function ($scope, $timeout, $element, attrs, $parse) {
                 var self = this;
-                this.baseRadius = 100;
-                this.radiusIncrementFactor = 0.66;
-                self.coordinates = {};
 
                 self._generateCoordinates = function (deg, rad, centerXY) {
                     var id = deg + 'deg_' + rad + '_rad' + centerXY.toString();
@@ -57,8 +58,6 @@
                     return self.coordinates[id];
                 }
 
-                self.generatedPies = [];
-
                 self._generatePies = function (_origPie, itr, _parentPiece) {
                     var _totalPieValue = _.reduce(_origPie, function (memo, item) { return memo + item.value }, 0);
                     var _degStart = 0;
@@ -78,6 +77,7 @@
                             _netMulFactor = _parentPiece.deg;
                         var _deg = Math.ceil((_slice.value / _totalPieValue) * _netMulFactor);
                         var _degEnd = _degStart + _deg;
+                        console.log(_slice.degStart);
                         //calculate start point and end point for arc
                         var _effectiveDeg = _degStart + _deg + (typeof _slice.degStart !== 'undefined' && _slice.degStart != null && _slice.degStart != {} ? _slice.degStart : 0);
                         var _midDeg = _degStart + ((_effectiveDeg - _degStart) / 2);
@@ -93,6 +93,8 @@
                         _slice.rad = _rad;
                         _slice.deg = _deg;
                         _slice.degStart = _degEnd - _deg;
+                        _slice.effectiveDeg = _effectiveDeg;
+                        _slice.midDeg = _midDeg;
                         _slice.degEnd = _degEnd;
                         _slice.startXY = startXY;
                         _slice.midXY = midXY;
@@ -140,45 +142,140 @@
                     return maxRadius;
                 }
 
+                self.getContainerWidth = function () {
+                    if (typeof $element !== 'undefined' && $element != null)
+                        return $element.width();
+                    else
+                        return (2 * self._maxRad);
+                }
+
+                self.getContainerHeight = function () {
+                    if (typeof $element !== 'undefined' && $element != null)
+                        return $element.height();
+                    else
+                        return (2 * self._maxRad);
+                }
+
                 self._getCenterXY = function (slices, pad) {
                     self._maxRad = self._calMaxRadius(slices);
+                    var _widthBuffer = self.getContainerWidth() / 2;
                     pad = pad !== 'undefined' && pad != {} && pad != null ? pad : 0;
-                    return { 'x': self._maxRad + (pad * 2), 'y': self._maxRad + (pad * 2) };
+                    return { 'x': _widthBuffer, 'y': self._maxRad + (pad * 2) };
+                }
+
+                self._calcQuadrants = function () {
+                    var _quadrant = {};
+                    var _width = self.getContainerWidth();
+                    var _height = self.getContainerHeight();
+                    var _whalf = _width / 2;
+                    var _hhalf = _height / 2;
+                    var centerXY = self.centerXY;
+                    var _gap = self.gapToLabel;
+                    var _rad = self._maxRad;
+                    if (_rad + _gap <= (_width - 30)) {
+                        _quadrant['NE'] = {
+                            'x': centerXY.x + _rad + _gap,
+                            'y': 10
+                        };
+                        _quadrant['NW'] = {
+                            'x': centerXY.x - _rad - _gap,
+                            'y': 10
+                        };
+                        _quadrant['SE'] = {
+                            'x': centerXY.x + _rad + _gap,
+                            'y': centerXY.y
+                        };
+                        _quadrant['SW'] = {
+                            'x': centerXY.x - _rad - _gap,
+                            'y': centerXY.y
+                        };
+                        return _quadrant;
+                    }
+                    else
+                        return undefined;
+                }
+
+                self._getQuadrantKey = function (deg) {
+                    var ret = '';
+                    if (0 <= deg && deg <= 90) ret = 'NE';
+                    else if (90 < deg && deg <= 180) ret = 'SE';
+                    else if (180 < deg && deg <= 270) ret = 'SW';
+                    else if (270 < deg && deg <= 360) ret = 'NW';
+                    return ret;
                 }
 
                 self._drawHelpBoxes = function () {
-                    var ctr = 0;
+                    var ctr = { 'NE': 0, 'SE': 0, 'NW': 0, 'SW': 0 };
                     var _minBoxHeight = 50;
                     var _pies = _.sortBy(angular.copy(self.generatedPies), function (_slice) { return -_slice.priority });
+
+                    /* GET MIN X & Y FROM ELEMENT */
+                    var _quadrant = self._calcQuadrants();
+                    //console.log(_quadrant);
                     _.each(_pies, function (_slice) {
-                        _slice.helpBoxX = self.centerXY.x + 60 + self._maxRad;
-                        _slice.helpBoxY = ctr + 30;
-                        _slice.fillOpacity = 1;
-                        ctr = ctr + _minBoxHeight;
+                        ctr['id'] = _slice.id;
+                        var _quadKey = self._getQuadrantKey(_slice.midDeg);
+                        //console.log(_slice);
+                        //console.log(_slice.midDeg);
+                        var _baseXY = _.clone(_quadrant[_quadKey]);
+                        //console.log(_baseXY);
+                        //console.log(_baseXY.y);
+                        _baseXY.y = _baseXY.y + ctr[_quadKey];
+                        /* calaculating ptr string for */
+                        if (_quadKey == 'NE' || _quadKey == 'SE') {
+                            var _midpoint = { 'x': _baseXY.x, 'y': _baseXY.y };
+                            var _stpoint = { 'x': _baseXY.x + 100, 'y': _baseXY.y };
+                            var _endPoint = _slice.midXY;
+                            _slice._ptr = _endPoint.x + ',' + _endPoint.y + ' ' + _midpoint.x + ',' + _midpoint.y + ' ' + _stpoint.x + ',' + _stpoint.y;
+                            /* calculating color box coordinates */
+                            _slice.colorBox = { 'x': _midpoint.x, 'y': _midpoint.y + 8 };
+                            /* calculating text box coordinates */
+                            _slice.textBox = { 'x': _midpoint.x + 24, 'y': _midpoint.y + 20 };
+                            /* increment ctr */
+                            _slice.incr = ctr[_quadKey];
+                        }
+                        else if (_quadKey == 'NW' || _quadKey == 'SW') {
+                            var _midpoint = { 'x': _baseXY.x, 'y': _baseXY.y };
+                            var _stpoint = { 'x': _baseXY.x - 100, 'y': _baseXY.y };
+                            var _endPoint = _slice.midXY;
+                            _slice._ptr = _stpoint.x + ',' + _stpoint.y + ' ' + _midpoint.x + ',' + _midpoint.y + ' ' + _endPoint.x + ',' + _endPoint.y;
+                            /* calculating color box coordinates */
+                            _slice.colorBox = { 'x': _midpoint.x - 100, 'y': _midpoint.y + 8 };
+                            /* calculating text box coordinates */
+                            _slice.textBox = { 'x': _midpoint.x - 100 + 24, 'y': _midpoint.y + 20 };
+                            /* increment ctr */
+                            _slice.incr = ctr[_quadKey];
+                        }
+                        ctr[_quadKey] = ctr[_quadKey] + _minBoxHeight;
                         var _actSlice = _.find(self.generatedPies, function (_sl) { return _sl._uid.localeCompare(_slice._uid) == 0; })
                         if (typeof _actSlice !== 'undefined' && _actSlice != null && _actSlice != {}) {
-                            _actSlice.helpBoxX = _slice.helpBoxX;
-                            _actSlice.textBoxX = _slice.helpBoxX + 24;
-                            _actSlice.helpBoxY = _slice.helpBoxY;
-                            _actSlice.textBoxY = _slice.helpBoxY + 12;
-                            _actSlice.fillOpacity = _slice.fillOpacity;
-                            var _stpoint = { 'x': _slice.helpBoxX + 70, 'y': _slice.helpBoxY - 8 };
-                            var _midpoint = { 'x': _slice.helpBoxX - 70, 'y': _slice.helpBoxY - 8 };
-                            var _endPoint = _actSlice.midXY;
-                            var _ptr = _endPoint.x + ',' + _endPoint.y + ' ' + _midpoint.x + ',' + _midpoint.y + ' ' + _stpoint.x + ',' + _stpoint.y;
-                            _actSlice.ptr = _ptr;
+                            _actSlice.colorBox = _slice.colorBox;
+                            _actSlice.textBox = _slice.textBox;
+                            _actSlice.ptr = _slice._ptr;
+                            _actSlice.fillOpacity = 1;
                         }
-
                     });
                 }
 
                 self._startGenerating = function (slices) {
                     self.generatedPies = [];
                     self.centerXY = self._getCenterXY(slices, 5);
-                    self.svgHolderWidth = self.svgWidth = (2 * self._maxRad) + 200;
-                    self.svgHolderHeight = self.svgHeight = (2 * self._maxRad);
+                    self.svgWidth = self.getContainerWidth();
+                    //self.svgHeight = (2 * self._maxRad);
+                    self.svgHeight = (2 * self._maxRad) + 100;
                     self._generatePies(slices, 1, null);
                     $timeout(self._drawHelpBoxes, 500);
+                }
+
+                self._init = function (values) {
+                    this.baseRadius = this.baseRadius || 100;
+                    this.radiusIncrementFactor = this.radiusIncrementFactor || 0.66;
+                    this.gapToLabel = this.gapToLabel || 60;
+                    self.coordinates = {};
+                    self.generatedPies = [];
+                    self.centerXY = {};
+                    self._maxRad = {};
+                    self._startGenerating(values);
                 }
 
                 self.click = function (data) {
@@ -190,13 +287,16 @@
             bindToController: true,
             replace: true,
             link: function (scope, element, attrs, ctrl) {
-                scope.$watch(function (scope) {
-                    return scope.slices;
-                }, function (value) {
-                    ctrl._startGenerating(ctrl.slices);
+                var watchListeners = [];
+                angular.forEach(['slices', 'radiusIncrementFactor', 'baseRadius', 'gapToLabel'], function (key) {
+                    if (attrs[key]) {
+                        var getAttribute = $parse(attrs[key]);
+                        watchListeners.push(scope.$parent.$watch(getAttribute, function (value) {
+                            ctrl._init(angular.copy(ctrl.slices));
+                        }));
+                    }
                 });
-
             }
         };
-    })
+    }])
 })();

@@ -80,6 +80,8 @@
     <Content Include="dist\min\fonts\glyphicons-halflings-regular.ttf" />
     <Content Include="dist\min\fonts\glyphicons-halflings-regular.woff" />
     <Content Include="dist\min\fonts\glyphicons-halflings-regular.woff2" />
+    <None Include="Properties\PublishProfiles\piemixsample - FTP.pubxml" />
+    <None Include="Properties\PublishProfiles\piemixsample - Web Deploy.pubxml" />
     <None Include="Properties\PublishProfiles\piemixsample.pubxml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
