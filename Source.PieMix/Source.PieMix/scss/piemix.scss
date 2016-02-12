@@ -1,11 +1,20 @@
 ﻿.pie-mix-holder {
     margin: 0 auto;
     padding: 30px 0;
+    width: 100%;
 
     svg {
         path {
             cursor: pointer;
             transition: fill 0.3s linear 0s;
+        }
+
+        text {
+            fill: #303030;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 600;
         }
     }
 }
