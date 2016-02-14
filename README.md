@@ -49,7 +49,7 @@ Sample Preview @ <a href="http://piemixsample.azurewebsites.net/">http://piemixs
 
 2.  Add Events - With Nesting 
 
-    <img src="Source.PieMix\Source.PieMix\images\1.png " />
+    <img src="Source.PieMix\Source.PieMix\images\1.PNG " />
 
 3.  Change radius increment factor
 
