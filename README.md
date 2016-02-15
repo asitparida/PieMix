@@ -33,13 +33,31 @@ Sample Preview @ <a href="http://piemixsample.azurewebsites.net/">http://piemixs
     ]
 
 ####Adding Tags
-    <pie-mix slices="sample.pieDataSample"></pie-mix>
+    <pie-mix slices="sample.pieDataSample" config="sample.config"></pie-mix>
 
-####Change Base Radius - 'baseRadius'
-    <pie-mix slices="sample.pieDataSample" base-radius="sample.baseRadius"></pie-mix>
+####Adding Callback On Slice Click - add 'data' always
+    <pie-mix slices="sample.pieDataSample" config="sample.config" callback-on-click="sample.sliceClick(data)" ></pie-mix>
 
-####Change Radius Increment Factor - 'radiusIncrementFactor'
-    <pie-mix slices="sample.pieDataSample" radius-increment-factor="sample.radiusIncrementFactor"></pie-mix>
+####Change Config 'baseRadius', 'radiusIncrementFactor', 'gapToLabel'
+    
+	HTML
+	<pie-mix slices="sample.pieDataSample" config="sample.config"></pie-mix>
+
+	JS - Angular
+	self.radiusIncrementFactorChnage = function () {
+        if (condition)
+            self.config = {
+                'baseRadius': 100,
+                'radiusIncrementFactor': 0.66,
+                'gapToLabel': 60,
+            }
+        else
+            self.config = {
+                'baseRadius': 100,
+                'radiusIncrementFactor': 0.33,
+                'gapToLabel': 60,
+            }
+    }
 
 ##Capabilities
 
