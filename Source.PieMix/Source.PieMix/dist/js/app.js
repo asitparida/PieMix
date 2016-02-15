@@ -26,9 +26,15 @@
 
     self.pieDataSample = pieData;
 
-    self.baseRadius = 100;
-    self.radiusIncrementFactor = 0.33;
-    self.gapToLabel = 60;
+    self.config = {
+        'baseRadius': 100,
+        'radiusIncrementFactor': 0.33,
+        'gapToLabel': 60,
+    }
+
+    self.sliceClick = function (data) {
+        console.log(data);
+    }
 
     var incr = 0;
     self.changePie = function () {
@@ -42,9 +48,17 @@
     var incr2 = 0;
     self.radiusIncrementFactorChnage = function () {
         if (incr2 % 2 == 0)
-            self.radiusIncrementFactor = 0.66;
+            self.config = {
+                'baseRadius': 100,
+                'radiusIncrementFactor': 0.66,
+                'gapToLabel': 60,
+            }
         else
-            self.radiusIncrementFactor = 0.33;
+            self.config = {
+                'baseRadius': 100,
+                'radiusIncrementFactor': 0.33,
+                'gapToLabel': 60,
+            }
         incr2 = incr2 + 1;
     }
 
