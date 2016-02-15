@@ -14,8 +14,8 @@
     <div id="pieMixMasterTmpl">
         <div class="pie-mix-holder" ng-style="{'height': piemixctrl.svgHolderHeight + 'px'}">
             <svg height="{{piemixctrl.svgHeight}}" width="{{piemixctrl.svgWidth}}" version="1.1" xmlns="http://www.w3.org/2000/svg">
-                <path tabindex="0" ng-attr-fill="{{path.activecolor}}" ng-attr-d="{{path.d}}" ng-attr-priority="{{path.priority}}" style="fill: {{path.activecolor}}" ng-repeat="path in piemixctrl.generatedPies  | orderBy:'priority':'false'" ng-click="sample.click(path.id)" ng-mouseenter="path.activecolor = '#000'" ng-mouseleave="path.activecolor = path.color"></path>
-                <rect ng-attr-x="{{path.colorBox.x}}" ng-attr-y="{{path.colorBox.y}}" width="15" height="15" style="fill-opacity:0;" ng-style="{'fill': path.activecolor, 'fill-opacity': path.fillOpacity}" ng-repeat="path in piemixctrl.generatedPies  | orderBy:'priority':'false'" ng-mouseenter="path.activecolor = '#000'" ng-mouseleave="path.activecolor = path.color" />
+                <path tabindex="0" ng-attr-fill="{{path.activecolor}}" ng-attr-d="{{path.d}}" ng-attr-priority="{{path.priority}}" style="fill: {{path.activecolor}}" ng-repeat="path in piemixctrl.generatedPies  | orderBy:'priority':'false'" ng-click="piemixctrl.pieSliceClicked(path.id)" ng-mouseenter="path.activecolor = '#000'" ng-mouseleave="path.activecolor = path.color"></path>
+                <rect ng-attr-x="{{path.colorBox.x}}" ng-attr-y="{{path.colorBox.y}}" width="15" height="15" style="fill-opacity:0;" ng-click="piemixctrl.pieSliceClicked(path.id)" ng-style="{'fill': path.activecolor, 'fill-opacity': path.fillOpacity}" ng-repeat="path in piemixctrl.generatedPies  | orderBy:'priority':'false'" ng-mouseenter="path.activecolor = '#000'" ng-mouseleave="path.activecolor = path.color" />
                 <text ng-attr-x="{{path.textBox.x}}" ng-attr-y="{{path.textBox.y}}" ng-repeat="path in piemixctrl.generatedPies  | orderBy:'priority':'false'">{{path.title}}</text>
                 <polyline ng-attr-points="{{path.ptr}}"
                           fill="none" stroke="#000"

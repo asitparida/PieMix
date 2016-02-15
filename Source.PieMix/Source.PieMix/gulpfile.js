@@ -30,41 +30,6 @@ var resolveMinifiedPath = function (path) {
     };
 }
 
-// Clean the distributable html directory
-//gulp.task('minify:clean:html:js', function () {
-//    return del('Resource/vx-grid-templates.js');
-//});
-
-//gulp.task('minify:html:js', ['minify:clean:html:js'], function () {
-//    return gulp.src('Resource/vx-grid-templates.html')
-//	.pipe(html2js())
-//	.pipe(gulp.dest('Resource'));
-//});
-
-// Minify JS Files
-//gulp.task('minify:js', ['minify:html:js'], function () {
-//    return gulp.src('Resource/*.js')
-//    .pipe(minify())
-//    .pipe(gulp.dest('js'))
-//});
-
-// Clean the concated js directory
-//gulp.task('clean:concat:js', function () {
-//    return del('dist/min/js/vx.grid.all.min.js');
-//});
-
-//Concat JS Files
-//gulp.task('concat:js', ['clean:concat:js', 'minify:js'], function () {
-//    return gulp.src('./js/*min.js')
-//    .pipe(concat('vx.grid.all.min.js'))
-//    .pipe(gulp.dest('./dist/min/js'));
-//});
-
-//Watch JS task
-//gulp.task('default:vxgrid:js', function () {
-//    gulp.watch(['Resource/vx-grid.js', 'Resource/vx-grid-templates.html'], ['concat:js']);
-//});
-
 // Clean the distributable css directory
 gulp.task('minify:clean:css', function () {
     return del('css/');
@@ -83,7 +48,7 @@ gulp.task('minify:css', ['minify:clean:css'], function () {
 });
 
 //Watch CSS task
-gulp.task('default:richcc:css', function () {
+gulp.task('default:piemix:css', function () {
     gulp.watch('scss/*.scss', ['minify:css']);
 });
 

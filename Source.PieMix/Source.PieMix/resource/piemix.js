@@ -26,15 +26,13 @@
             restrict: 'AEC',
             scope: {
                 slices: '=',
-                baseRadius: "=",
-                radiusIncrementFactor: "=",
-                gapToLabel: "="
+                config: "=",
+                callbackOnClick: "&"
             },
             templateUrl: 'template/piemix/template.html',
             //templateUrl: 'resource/piemix.html',
             controller: ["$scope", "$timeout", "$element", "$attrs", "$parse", function ($scope, $timeout, $element, attrs, $parse) {
                 var self = this;
-
                 self._generateCoordinates = function (deg, rad, centerXY) {
                     var id = deg + 'deg_' + rad + '_rad' + centerXY.toString();
                     if (typeof self.coordinates[id] !== 'undefined' && self.coordinates[id] != null)
@@ -77,7 +75,6 @@
                             _netMulFactor = _parentPiece.deg;
                         var _deg = Math.ceil((_slice.value / _totalPieValue) * _netMulFactor);
                         var _degEnd = _degStart + _deg;
-                        console.log(_slice.degStart);
                         //calculate start point and end point for arc
                         var _effectiveDeg = _degStart + _deg + (typeof _slice.degStart !== 'undefined' && _slice.degStart != null && _slice.degStart != {} ? _slice.degStart : 0);
                         var _midDeg = _degStart + ((_effectiveDeg - _degStart) / 2);
@@ -211,15 +208,10 @@
 
                     /* GET MIN X & Y FROM ELEMENT */
                     var _quadrant = self._calcQuadrants();
-                    //console.log(_quadrant);
                     _.each(_pies, function (_slice) {
                         ctr['id'] = _slice.id;
                         var _quadKey = self._getQuadrantKey(_slice.midDeg);
-                        //console.log(_slice);
-                        //console.log(_slice.midDeg);
                         var _baseXY = _.clone(_quadrant[_quadKey]);
-                        //console.log(_baseXY);
-                        //console.log(_baseXY.y);
                         _baseXY.y = _baseXY.y + ctr[_quadKey];
                         /* calaculating ptr string for */
                         if (_quadKey == 'NE' || _quadKey == 'SE') {
@@ -268,9 +260,9 @@
                 }
 
                 self._init = function (values) {
-                    this.baseRadius = this.baseRadius || 100;
-                    this.radiusIncrementFactor = this.radiusIncrementFactor || 0.66;
-                    this.gapToLabel = this.gapToLabel || 60;
+                    this.baseRadius = angular.copy(self.config.baseRadius) || 100;
+                    this.radiusIncrementFactor = angular.copy(self.config.radiusIncrementFactor) || 0.66;
+                    this.gapToLabel = angular.copy(self.config.gapToLabel) || 60;
                     self.coordinates = {};
                     self.generatedPies = [];
                     self.centerXY = {};
@@ -278,8 +270,8 @@
                     self._startGenerating(values);
                 }
 
-                self.click = function (data) {
-                    console.log(data);
+                self.pieSliceClicked = function (pie) {
+                    self.callbackOnClick({ data : pie});
                 }
 
             }],
@@ -288,7 +280,7 @@
             replace: true,
             link: function (scope, element, attrs, ctrl) {
                 var watchListeners = [];
-                angular.forEach(['slices', 'radiusIncrementFactor', 'baseRadius', 'gapToLabel'], function (key) {
+                angular.forEach(['slices', 'config'], function (key) {
                     if (attrs[key]) {
                         var getAttribute = $parse(attrs[key]);
                         watchListeners.push(scope.$parent.$watch(getAttribute, function (value) {
