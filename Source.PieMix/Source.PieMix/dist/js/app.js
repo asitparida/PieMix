@@ -48,17 +48,9 @@
     var incr2 = 0;
     self.radiusIncrementFactorChnage = function () {
         if (incr2 % 2 == 0)
-            self.config = {
-                'baseRadius': 100,
-                'radiusIncrementFactor': 0.66,
-                'gapToLabel': 60,
-            }
+            self.config['radiusIncrementFactor'] = 0.66;
         else
-            self.config = {
-                'baseRadius': 100,
-                'radiusIncrementFactor': 0.33,
-                'gapToLabel': 60,
-            }
+            self.config['radiusIncrementFactor'] = 0.33;
         incr2 = incr2 + 1;
     }
 

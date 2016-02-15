@@ -283,9 +283,9 @@
                 angular.forEach(['slices', 'config'], function (key) {
                     if (attrs[key]) {
                         var getAttribute = $parse(attrs[key]);
-                        watchListeners.push(scope.$parent.$watch(getAttribute, function (value) {
+                        watchListeners.push(scope.$parent.$watch(angular.bind(ctrl, function () { return this[key] }), function (value) {
                             ctrl._init(angular.copy(ctrl.slices));
-                        }));
+                        }, true));
                     }
                 });
             }
