@@ -46,17 +46,9 @@ Sample Preview @ <a href="http://piemixsample.azurewebsites.net/">http://piemixs
 	JS - Angular
 	self.radiusIncrementFactorChnage = function () {
         if (condition)
-            self.config = {
-                'baseRadius': 100,
-                'radiusIncrementFactor': 0.66,
-                'gapToLabel': 60,
-            }
+            self.config['radiusIncrementFactor'] = 0.66;
         else
-            self.config = {
-                'baseRadius': 100,
-                'radiusIncrementFactor': 0.33,
-                'gapToLabel': 60,
-            }
+            self.config['radiusIncrementFactor'] = 0.33;
     }
 
 ##Capabilities
