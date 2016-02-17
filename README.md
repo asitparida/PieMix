@@ -38,7 +38,14 @@ Sample Preview @ <a href="http://piemixsample.azurewebsites.net/">http://piemixs
 ####Adding Callback On Slice Click - add 'data' always
     <pie-mix slices="sample.pieDataSample" config="sample.config" callback-on-click="sample.sliceClick(data)" ></pie-mix>
 
-####Change Config 'baseRadius', 'radiusIncrementFactor', 'gapToLabel'
+####Change Config 
+#####'baseRadius' - default : 100
+#####'radiusIncrementFactor' - default : 0.66
+#####'gapToLabel' - default : 60
+#####'strokeWidth' - default : 0
+#####'strokeColor' - default : '#fff'
+#####'showLabels' - default : true
+#####'showStrokeCircleAtCenter' - default : false
     
 	HTML
 	<pie-mix slices="sample.pieDataSample" config="sample.config"></pie-mix>
