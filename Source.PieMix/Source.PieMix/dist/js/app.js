@@ -30,6 +30,10 @@
         'baseRadius': 100,
         'radiusIncrementFactor': 0.33,
         'gapToLabel': 60,
+        'strokeWidth': 3,
+        'showLabels': true,
+        'strokeColor':'#fff',
+        'showStrokeCircleAtCenter':true
     }
 
     self.sliceClick = function (data) {

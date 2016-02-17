@@ -256,6 +256,11 @@
                     //self.svgHeight = (2 * self._maxRad);
                     self.svgHeight = (2 * self._maxRad) + 100;
                     self._generatePies(slices, 1, null);
+                    //insert center white stroke filled circle
+                    if (self.showStrokeCircleAtCenter == true) {
+                        self.strokeCircle = { 'cx': self.centerXY.x, 'cy': self.centerXY.y, 'r': self.baseRadius * 0.5, 'fill': self.strokeColor };
+                    }
+                    var _pieSlic = { '_uid': _GUID(), 'activecolor': self.strokeColor, 'color': self.strokeColor };
                     $timeout(self._drawHelpBoxes, 500);
                 }
 
@@ -263,6 +268,10 @@
                     this.baseRadius = angular.copy(self.config.baseRadius) || 100;
                     this.radiusIncrementFactor = angular.copy(self.config.radiusIncrementFactor) || 0.66;
                     this.gapToLabel = angular.copy(self.config.gapToLabel) || 60;
+                    this.strokeColor = angular.copy(self.config.strokeColor) || '#fff';
+                    this.strokeWidth = angular.copy(self.config.strokeWidth) || 0;
+                    this.showLabels = angular.copy(self.config.showLabels);
+                    this.showStrokeCircleAtCenter = angular.copy(self.config.showStrokeCircleAtCenter);
                     self.coordinates = {};
                     self.generatedPies = [];
                     self.centerXY = {};
