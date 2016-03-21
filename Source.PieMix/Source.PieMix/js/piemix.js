@@ -99,20 +99,27 @@
                         _slice.pathCoeff = _pathCoeff;
                         _slice.activecolor = _slice.color;
                         _slice.priority = itr;
-                        var _path = 'M' + _slice.startXY.x + ' ' + _slice.startXY.y
-                        + ' A ' + _slice.rad + ' ' + _slice.rad
-                        + ', 0, '
-                        + _slice.pathCoeff
-                        + ', 1, '
-                        + _slice.endXY.x + ' ' + _slice.endXY.y + ' L '
-                        + self.centerXY.x + ' ' + self.centerXY.y + ' Z';
+                        var _path = '';
+                        if (_slice.effectiveDeg != 360)
+                            _path = 'M' + _slice.startXY.x + ' ' + _slice.startXY.y
+                                + ' A ' + _slice.rad + ' ' + _slice.rad
+                                + ', 0, '
+                                + _slice.pathCoeff
+                                + ', 1, '
+                                + _slice.endXY.x + ' ' + _slice.endXY.y + ' L '
+                                + self.centerXY.x + ' ' + self.centerXY.y + ' Z';
+                        else
+                            _path = 'M ' + self.centerXY.x + ' ' + self.centerXY.y
+                                + ' m ' + (-_slice.rad) + ' ' + 0
+                                + ' a ' + _slice.rad + ' ' + _slice.rad + ' 0 1 1 ' + (_slice.rad * 2) + ' 0'
+                                + ' a ' + _slice.rad + ' ' + _slice.rad + ' 0 1 1 ' + (-(_slice.rad * 2)) + ' 0';
                         _slice.d = _path;
                         var _copy = _.clone(_slice);
                         delete _copy.child;
                         self.generatedPies.push(_copy);
                         if (typeof _slice.child !== 'undefined' && _slice.child != {} && _slice.child.length > 0)
                             self._generatePies(_slice.child, itr + 1, _slice);
-                        //Assign fo rnext loop
+                        //Assign for next loop
                         _degStart = _degEnd;
                     });
                 }
@@ -280,7 +287,7 @@
                 }
 
                 self.pieSliceClicked = function (pie) {
-                    self.callbackOnClick({ data : pie});
+                    self.callbackOnClick({ data: pie });
                 }
 
             }],
