@@ -82,8 +82,9 @@ Sample Preview @ <a href="http://piemixsample.azurewebsites.net/">http://piemixs
 
 ##Adding dependency to your project
     angular.module('myModule', ['piemix.modules']);
-
-
+    
+##Note
+Inline documentation + README last updated 15/03/2016. Please refer sample app in the repo for updated capabilities.</h6>
 
 
 
