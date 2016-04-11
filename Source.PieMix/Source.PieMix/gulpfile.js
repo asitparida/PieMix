@@ -6,7 +6,8 @@
     cssmin = require('gulp-cssmin'),
     del = require('del'),
     html2js = require('gulp-html-js-template'),
-    minify = require('gulp-minify');
+    minify = require('gulp-minify'),
+    plato = require('plato');
 
 gulp.task('styles', function () {
     gulp.src('scss/*.scss')
@@ -82,6 +83,19 @@ gulp.task('concat:js', ['clean:concat:js', 'minify:js'], function () {
     return gulp.src('./js/*min.js')
     .pipe(concat('piemix.min.js'))
     .pipe(gulp.dest('./dist/min/js'));
+});
+
+//Plato Tasks
+gulp.task('plato:js', function () {
+    try {
+        return plato.inspect(['resource/*.js'],
+            'plato-reports/',
+            {}, function (report) {
+                /* analyse report */
+            });
+    } catch (e) {
+        console.log(e);
+    }
 });
 
 //Watch JS task
