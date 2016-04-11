@@ -55,6 +55,14 @@
         'showStrokeCircleAtCenter': true
     }
 
+    self.sampleHighlight = function () {
+        self.config.highlightPie('103');
+    }
+
+    self.sampleDehighlight = function() {
+        self.config.dehighlightPie('103');
+    }
+
     self.sliceClick = function (data) {
         console.log(data);
     }

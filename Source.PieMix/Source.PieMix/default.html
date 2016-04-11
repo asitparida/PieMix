@@ -21,6 +21,8 @@
     <button ng-click="sample.changePie()">Change Data</button>
     <button ng-click="sample.radiusIncrementFactorChnage()">Change radius Increment</button>
     <button ng-click="sample.click('123')">Sample Click</button>
+    <button ng-click="sample.sampleHighlight()">Highlight #16A085</button>
+    <button ng-click="sample.sampleDehighlight()">Dehighlight #16A085</button>
     <div style="width:100%;height:calc(100vh - 48px);padding:0 30px;overflow:auto;margin:0;" class="col-xs-12">
         <div style="display:block; height:50%;width:100%;margin:30px auto;">
             <pie-mix slices="sample.pieDataSample" config="sample.config" callback-on-click="sample.sliceClick(data)" ></pie-mix>
