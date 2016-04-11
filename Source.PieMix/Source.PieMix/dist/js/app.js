@@ -40,6 +40,21 @@
         'showStrokeCircleAtCenter': true
     }
 
+    self.config.pieSliceClicked = function (data) {
+        console.log('pieSliceClicked');
+        console.log(data);
+    }
+
+    self.config2 = {
+        'baseRadius': 80,
+        'radiusIncrementFactor': 0.50,
+        'gapToLabel': 60,
+        'strokeWidth': 0,
+        'showLabels': true,
+        'strokeColor': '#fff',
+        'showStrokeCircleAtCenter': true
+    }
+
     self.sliceClick = function (data) {
         console.log(data);
     }

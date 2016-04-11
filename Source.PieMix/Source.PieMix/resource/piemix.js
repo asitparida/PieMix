@@ -279,6 +279,9 @@
                     this.strokeWidth = angular.copy(self.config.strokeWidth) || 0;
                     this.showLabels = angular.copy(self.config.showLabels);
                     this.showStrokeCircleAtCenter = angular.copy(self.config.showStrokeCircleAtCenter);
+                    this.xsView = angular.copy(self.config.xsView) || false;
+                    if (this.xsView == true)
+                        this.showLabels = false;
                     self.coordinates = {};
                     self.generatedPies = [];
                     self.centerXY = {};
@@ -288,6 +291,8 @@
 
                 self.pieSliceClicked = function (pie) {
                     self.callbackOnClick({ data: pie });
+                    if (typeof self.config.pieSliceClicked === 'function')
+                        self.config.pieSliceClicked({ data: pie });
                 }
 
             }],
