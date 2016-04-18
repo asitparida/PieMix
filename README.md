@@ -51,7 +51,7 @@ Sample Preview @ <a href="http://piemixsample.azurewebsites.net/">http://piemixs
 	<pie-mix slices="sample.pieDataSample" config="sample.config"></pie-mix>
 
 	JS - Angular
-	self.radiusIncrementFactorChnage = function () {
+	self.radiusIncrementFactorChange = function () {
         if (condition)
             self.config['radiusIncrementFactor'] = 0.66;
         else
