@@ -1,4 +1,4 @@
-# Source.PieMix (v1.0)
+# Source.PieMix (v1.2)
 
 A nested pie chart control with angular bound data composed as a single SVG
 
@@ -84,7 +84,7 @@ Sample Preview @ <a href="http://piemixsample.azurewebsites.net/">http://piemixs
     angular.module('myModule', ['piemix.modules']);
     
 ##Note
-Inline documentation + README last updated 15/03/2016. Please refer sample app in the repo for updated capabilities.</h6>
+Inline documentation + README last updated 15/05/2016. Please refer sample app in the repo for updated capabilities.</h6>
 
 
 
