@@ -73,13 +73,14 @@
                         var _netMulFactor = 360;
                         if (typeof _parentPiece !== 'undefined' && _parentPiece != null && typeof _parentPiece.deg !== 'undefined' && _parentPiece.deg != null)
                             _netMulFactor = _parentPiece.deg;
-                        var _deg = Math.ceil((_slice.value / _totalPieValue) * _netMulFactor);
+                        var _deg = Math.floor((_slice.value / _totalPieValue) * _netMulFactor);
                         var _degEnd = _degStart + _deg;
                         //calculate start point and end point for arc
                         var _effectiveDeg = _degStart + _deg + (typeof _slice.degStart !== 'undefined' && _slice.degStart != null && _slice.degStart != {} ? _slice.degStart : 0);
                         var _midDeg = _degStart + ((_effectiveDeg - _degStart) / 2);
                         var startXY = self._generateCoordinates(_degStart, _rad, self.centerXY);
                         var midXY = self._generateCoordinates(_midDeg, _rad, self.centerXY);
+                        var offsetMidXY = self._generateCoordinates(_midDeg, _rad + 20, self.centerXY);
                         var endXY = self._generateCoordinates(_effectiveDeg, _rad, self.centerXY);
                         //Assigningg path coeff
                         var _pathCoeff = 0;
@@ -95,6 +96,7 @@
                         _slice.degEnd = _degEnd;
                         _slice.startXY = startXY;
                         _slice.midXY = midXY;
+                        _slice.offsetMidXY = offsetMidXY;
                         _slice.endXY = endXY;
                         _slice.pathCoeff = _pathCoeff;
                         _slice.activecolor = _slice.color;
@@ -177,21 +179,13 @@
                     var _gap = self.gapToLabel;
                     var _rad = self._maxRad;
                     if (_rad + _gap <= (_width - 30)) {
-                        _quadrant['NE'] = {
+                        _quadrant['NE'] = _quadrant['SE'] = {
                             'x': centerXY.x + _rad + _gap,
                             'y': 10
                         };
-                        _quadrant['NW'] = {
-                            'x': centerXY.x - _rad - _gap,
+                        _quadrant['NW'] = _quadrant['SW'] = {
+                                'x': centerXY.x - _rad - _gap,
                             'y': 10
-                        };
-                        _quadrant['SE'] = {
-                            'x': centerXY.x + _rad + _gap,
-                            'y': centerXY.y
-                        };
-                        _quadrant['SW'] = {
-                            'x': centerXY.x - _rad - _gap,
-                            'y': centerXY.y
                         };
                         return _quadrant;
                     }
@@ -210,50 +204,100 @@
 
                 self._drawHelpBoxes = function () {
                     var ctr = { 'NE': 0, 'SE': 0, 'NW': 0, 'SW': 0 };
-                    var _minBoxHeight = 50;
-                    var _pies = _.sortBy(angular.copy(self.generatedPies), function (_slice) { return -_slice.priority });
+                    var _minBoxHeight = 35;
 
-                    /* GET MIN X & Y FROM ELEMENT */
-                    var _quadrant = self._calcQuadrants();
-                    _.each(_pies, function (_slice) {
-                        ctr['id'] = _slice.id;
-                        var _quadKey = self._getQuadrantKey(_slice.midDeg);
-                        var _baseXY = _.clone(_quadrant[_quadKey]);
-                        _baseXY.y = _baseXY.y + ctr[_quadKey];
-                        /* calaculating ptr string for */
-                        if (_quadKey == 'NE' || _quadKey == 'SE') {
-                            var _midpoint = { 'x': _baseXY.x, 'y': _baseXY.y };
-                            var _stpoint = { 'x': _baseXY.x + 100, 'y': _baseXY.y };
-                            var _endPoint = _slice.midXY;
-                            _slice._ptr = _endPoint.x + ',' + _endPoint.y + ' ' + _midpoint.x + ',' + _midpoint.y + ' ' + _stpoint.x + ',' + _stpoint.y;
-                            /* calculating color box coordinates */
-                            _slice.colorBox = { 'x': _midpoint.x, 'y': _midpoint.y + 8 };
-                            /* calculating text box coordinates */
-                            _slice.textBox = { 'x': _midpoint.x + 24, 'y': _midpoint.y + 20 };
-                            /* increment ctr */
-                            _slice.incr = ctr[_quadKey];
-                        }
-                        else if (_quadKey == 'NW' || _quadKey == 'SW') {
-                            var _midpoint = { 'x': _baseXY.x, 'y': _baseXY.y };
-                            var _stpoint = { 'x': _baseXY.x - 100, 'y': _baseXY.y };
-                            var _endPoint = _slice.midXY;
-                            _slice._ptr = _stpoint.x + ',' + _stpoint.y + ' ' + _midpoint.x + ',' + _midpoint.y + ' ' + _endPoint.x + ',' + _endPoint.y;
-                            /* calculating color box coordinates */
-                            _slice.colorBox = { 'x': _midpoint.x - 100, 'y': _midpoint.y + 8 };
-                            /* calculating text box coordinates */
-                            _slice.textBox = { 'x': _midpoint.x - 100 + 24, 'y': _midpoint.y + 20 };
-                            /* increment ctr */
-                            _slice.incr = ctr[_quadKey];
-                        }
-                        ctr[_quadKey] = ctr[_quadKey] + _minBoxHeight;
-                        var _actSlice = _.find(self.generatedPies, function (_sl) { return _sl._uid.localeCompare(_slice._uid) == 0; })
-                        if (typeof _actSlice !== 'undefined' && _actSlice != null && _actSlice != {}) {
-                            _actSlice.colorBox = _slice.colorBox;
-                            _actSlice.textBox = _slice.textBox;
-                            _actSlice.ptr = _slice._ptr;
-                            _actSlice.fillOpacity = 1;
+                    var _pieCopiesForLabel = _.map(angular.copy(self.generatedPies), function (_pieSlice, key) {
+                        return {
+                            'midXY': _pieSlice.midXY,
+                            'midDeg': _pieSlice.midDeg,
+                            'offsetMidXY': _pieSlice.offsetMidXY,
+                            'priority': _pieSlice.priority,
+                            'rad':_pieSlice.rad,
+                            'id': _pieSlice.id,
+                            'side': _pieSlice.midXY.x == self.centerXY.x ? 0 : (_pieSlice.midXY.x > self.centerXY.x ? 1 : -1)
                         }
                     });
+
+                    /* GET MID POINTS IN RIGHT HEMISPHERE OR side == 1*/
+                    var _pieCopiesRight = _.sortBy(_.filter(_pieCopiesForLabel, function (_pie) { return _pie.side == 1 }), function (pie) { return pie.midDeg });
+                    var _pieCopiesLeft = _.sortBy(_.filter(_pieCopiesForLabel, function (_pie) { return _pie.side == 0 || _pie.side == -1 }), function (pie) { return -pie.midDeg });
+                    var _quadrant = self._calcQuadrants();
+                    var _lastPieOffset = null;
+                    _.each(_pieCopiesRight, function (_pie, _iter) {
+                        var _quadKey = self._getQuadrantKey(_pie.midDeg);
+                        var _baseXY = _.clone(_quadrant[_quadKey]);
+                        var _offsetXY = _pie.offsetMidXY;
+                        if (_lastPieOffset != null) {
+                            console.log(_offsetXY.y - _lastPieOffset.y);
+                            if (_offsetXY.y - _lastPieOffset.y < _minBoxHeight) {
+                                var _radFix = _minBoxHeight - (_offsetXY.y - _lastPieOffset.y);
+                                var calculatedOffset = {};
+                                if (_quadKey == 'NE') {
+                                    _offsetXY.y = _offsetXY.y + _radFix;
+                                }
+                                else if (_quadKey == 'SE') {
+                                    calculatedOffset = self._generateCoordinates(_pie.midDeg, _pie.rad + 20 + _radFix, self.centerXY);
+                                    _offsetXY = calculatedOffset;
+                                }                                
+                            }
+                        }
+                        var _midpoint = { 'x': _baseXY.x, 'y': _offsetXY.y };
+                        var _stpoint = { 'x': _baseXY.x + 100, 'y': _offsetXY.y };
+                        var _endPoint = _pie.midXY;
+                        _pie._ptr = _endPoint.x + ',' + _endPoint.y + ' ' + _offsetXY.x + ',' + _offsetXY.y + ' ' + _midpoint.x + ',' + _midpoint.y + ' ' + _stpoint.x + ',' + _stpoint.y;
+                        _pie.colorBox = { 'x': _midpoint.x, 'y': _midpoint.y + 4 };
+                        _pie.textBox = { 'x': _midpoint.x + 24, 'y': _midpoint.y + 16 };
+                        _lastPieOffset = _offsetXY;
+                    });
+                    _lastPieOffset = null;
+                    _.each(_pieCopiesLeft, function (_pie, _iter) {
+                        var _quadKey = self._getQuadrantKey(_pie.midDeg);
+                        var _baseXY = _.clone(_quadrant[_quadKey]);
+                        var _offsetXY = _pie.offsetMidXY;
+                        if (_lastPieOffset != null) {
+                            if (_offsetXY.y - _lastPieOffset.y < _minBoxHeight) {
+                                var _radFix = _minBoxHeight - (_offsetXY.y - _lastPieOffset.y);
+                                var calculatedOffset = {};
+                                if (_quadKey == 'NW') {
+                                    _offsetXY.y = _offsetXY.y + _radFix;
+                                }
+                                else if (_quadKey == 'SW') {
+                                    calculatedOffset = self._generateCoordinates(_pie.midDeg, _pie.rad + 20 + _radFix, self.centerXY);
+                                    _offsetXY = calculatedOffset;
+                                }
+                            }
+                        }
+                        var _midpoint = { 'x': _baseXY.x, 'y': _offsetXY.y };
+                        var _stpoint = { 'x': _baseXY.x - 100, 'y': _offsetXY.y };
+                        var _endPoint = _pie.midXY;
+                        _pie.colorBox = { 'x': _midpoint.x - 100, 'y': _midpoint.y + 4 };
+                        _pie.textBox = { 'x': _midpoint.x - 100 + 24, 'y': _midpoint.y + 16 };
+                        _pie._ptr = _stpoint.x + ',' + _stpoint.y + ' ' + _midpoint.x + ',' + _midpoint.y + ' ' + _offsetXY.x + ',' + _offsetXY.y + ' ' + _endPoint.x + ',' + _endPoint.y;
+                        _lastPieOffset = _offsetXY;
+                    });
+
+                    _.each(self.generatedPies, function (pie) {
+                        var _side = pie.midXY.x == self.centerXY.x ? 0 : (pie.midXY.x > self.centerXY.x ? 1 : -1);
+                        if (_side == 1) {
+                            var _approPie = _.find(_pieCopiesRight, function (_pieRight) { return _pieRight.id == pie.id });
+                            if (typeof _approPie !== 'undefined') {
+                                pie.ptr = _approPie._ptr;
+                                pie.colorBox = _approPie.colorBox;
+                                pie.textBox = _approPie.textBox;
+                                pie.fillOpacity = 1;
+                            }
+                        }
+                        else if (_side == -1) {
+                            var _approPie = _.find(_pieCopiesLeft, function (_pieRight) { return _pieRight.id == pie.id });
+                            if (typeof _approPie !== 'undefined') {
+                                pie.ptr = _approPie._ptr;
+                                pie.colorBox = _approPie.colorBox;
+                                pie.textBox = _approPie.textBox;
+                                pie.fillOpacity = 1;
+                            }
+                        }
+                    });
+
                 }
 
                 self._startGenerating = function (slices) {
