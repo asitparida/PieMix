@@ -32,24 +32,24 @@
         }
     ];
 
-    //var pieData = [
-    //       {
-    //           'id': '101', 'title': 'INCENTIVE (70%)', 'value': 70, 'color': '#3498db', 'child': [
-    //               {
-    //                   'id': '201', 'title': 'RBI (80%)', 'value': 80, 'color': '#34495e', 'child': [
-    //                       { 'id': '301', 'title': 'All Products - Billed Revenue (20%)', 'value': 20, 'color': '#f39c12' },
-    //                       { 'id': '302', 'title': 'Azure Consumed Revenue (20%)', 'value': 25, 'color': '#e74c3c' },
-    //                       { 'id': '303', 'title': 'Services - Premier & NWS (10%)', 'value': 13, 'color': '#9B7E36' },
-    //                       { 'id': '304', 'title': 'Cloud Billed Revenue (20%)', 'value': 12, 'color': '#4C00BF' },
-    //                       { 'id': '305', 'title': 'O365 Active Usage (10%)', 'value': 20, 'color': '#51A36E' },
-    //                       { 'id': '306', 'title': 'CRM Online Billed Revenue (20%)', 'value': 10, 'color': '#BF007F' }
-    //                   ]
-    //               },
-    //               { 'id': '202', 'title': 'CBI (20%)', 'value': 20, 'color': '#9b59b6' }
-    //           ]
-    //       },
-    //       { 'id': '102', 'title': 'BASE (30%)', 'value': 30, 'color': '#2ecc71' }
-    //];
+    var pieData1 = [
+           {
+               'id': '101', 'title': 'I (70%)', 'value': 70, 'color': '#3498db', 'child': [
+                   {
+                       'id': '201', 'title': 'R (80%)', 'value': 80, 'color': '#34495e', 'child': [
+                           { 'id': '301', 'title': 'A (20%)', 'value': 20, 'color': '#f39c12' },
+                           { 'id': '302', 'title': 'AZ (20%)', 'value': 25, 'color': '#e74c3c' },
+                           { 'id': '303', 'title': 'SE (10%)', 'value': 13, 'color': '#9B7E36' },
+                           { 'id': '304', 'title': 'CL (20%)', 'value': 12, 'color': '#4C00BF' },
+                           { 'id': '305', 'title': 'O (10%)', 'value': 20, 'color': '#51A36E' },
+                           { 'id': '306', 'title': 'C (20%)', 'value': 10, 'color': '#BF007F' }
+                       ]
+                   },
+                   { 'id': '202', 'title': 'CB (20%)', 'value': 20, 'color': '#9b59b6' }
+               ]
+           },
+           { 'id': '102', 'title': 'BA (30%)', 'value': 30, 'color': '#2ecc71' }
+    ];
 
     var pieData2 = [
         { 'id': '101', 'title': '# 34495e', 'value': 60, 'color': '#34495e' },
@@ -58,6 +58,7 @@
     ];
 
     self.pieDataSample = pieData;
+    self.pieDataSample2 = pieData1;
 
     self.config = {
         'baseRadius': 80,
