@@ -204,7 +204,7 @@
 
                 self._drawHelpBoxes = function () {
                     var ctr = { 'NE': 0, 'SE': 0, 'NW': 0, 'SW': 0 };
-                    var _minBoxHeight = 55;
+                    var _minBoxHeight = 50;
 
                     var _pieCopiesForLabel = _.map(angular.copy(self.generatedPies), function (_pieSlice, key) {
                         return {
@@ -224,27 +224,21 @@
                     var _pieCopiesLeft = _.sortBy(_.filter(_pieCopiesForLabel, function (_pie) { return _pie.side == 0 || _pie.side == -1 }), function (pie) { return -pie.midDeg });
                     var _quadrant = self._calcQuadrants();
                     var _lastPieOffset = null;
-                    console.log(_pieCopiesRight);
                     _.each(_pieCopiesRight, function (_pie, _iter) {
-                        console.log('***************************************************');
-                        console.log(_pie);
                         var _quadKey = self._getQuadrantKey(_pie.midDeg);
                         var _baseXY = _.clone(_quadrant[_quadKey]);
                         var _offsetXY = _pie.offsetMidXY;
                         if (_lastPieOffset != null) {
                             if (_offsetXY.y - _lastPieOffset.y < _minBoxHeight) {
                                 var _radFix = _minBoxHeight - (_offsetXY.y - _lastPieOffset.y);
-                                console.log(_offsetXY.y - _lastPieOffset.y);
-                                console.log(_radFix);
                                 var calculatedOffset = {};
                                 if (_quadKey == 'NE') {
                                     _offsetXY.y = _offsetXY.y + _radFix;
-                                    console.log(1);
+                                    _offsetXY.x = _offsetXY.x + _radFix;
                                 }
                                 else if (_quadKey == 'SE') {
                                     calculatedOffset = self._generateCoordinates(_pie.midDeg, _pie.rad + 30 + _radFix, self.centerXY);
                                     _offsetXY = calculatedOffset;
-                                    console.log(2);
                                 }                                
                             }
                         }
@@ -255,7 +249,6 @@
                         _pie.colorBox = { 'x': _midpoint.x, 'y': _midpoint.y + 4 };
                         _pie.textBox = { 'x': _midpoint.x + 24, 'y': _midpoint.y + 16 };
                         _lastPieOffset = _offsetXY;
-                        console.log('***************************************************');
                     });
                     _lastPieOffset = null;
                     _.each(_pieCopiesLeft, function (_pie, _iter) {
@@ -268,6 +261,7 @@
                                 var calculatedOffset = {};
                                 if (_quadKey == 'NW') {
                                     _offsetXY.y = _offsetXY.y + _radFix;
+                                    _offsetXY.x = _offsetXY.x - _radFix;
                                 }
                                 else if (_quadKey == 'SW') {
                                     calculatedOffset = self._generateCoordinates(_pie.midDeg, _pie.rad + 30 + _radFix, self.centerXY);
@@ -312,7 +306,7 @@
                     self.generatedPies = [];
                     self.centerXY = self._getCenterXY(slices, 5);
                     self.svgWidth = self.getContainerWidth();
-                    self.svgHeight = self.getContainerHeight();
+                    self.svgHeight = Math.max(self.getContainerHeight(), 2 * self._maxRad + 100);
                     self._generatePies(slices, 1, null);
                     //insert center white stroke filled circle
                     if (self.showStrokeCircleAtCenter == true) {
