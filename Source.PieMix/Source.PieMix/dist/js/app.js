@@ -62,7 +62,7 @@
 
     self.config = {
         'baseRadius': 80,
-        'radiusIncrementFactor': 0.50,
+        'radiusIncrementFactor': 0.66,
         'gapToLabel': 60,
         'strokeWidth': 3,
         'showLabels': true,

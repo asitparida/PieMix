@@ -119,8 +119,19 @@
                         var _copy = _.clone(_slice);
                         delete _copy.child;
                         self.generatedPies.push(_copy);
-                        if (typeof _slice.child !== 'undefined' && _slice.child != {} && _slice.child.length > 0)
-                            self._generatePies(_slice.child, itr + 1, _slice);
+                        if (typeof _slice.child !== 'undefined' && _slice.child != {} && _slice.child.length > 0) {
+                            var _mrad = _slice.rad + 5;
+                            var _md = 'M ' + self.centerXY.x + ' ' + self.centerXY.y
+                                + ' m ' + (-_mrad) + ' ' + 0
+                                + ' a ' + _mrad + ' ' + _mrad + ' 0 1 1 ' + (_mrad * 2) + ' 0'
+                                + ' a ' + _mrad + ' ' + _mrad + ' 0 1 1 ' + (-(_mrad * 2)) + ' 0';
+                            var _mpath = { 'd': _md };
+                            _mpath.priority = itr + 1;
+                            _mpath.activecolor = _mpath.color = '#ffffff';
+                            _mpath.nobox = true;
+                            self.generatedPies.push(_mpath);
+                            self._generatePies(_slice.child, itr + 2, _slice);
+                        }
                         //Assign for next loop
                         _degStart = _degEnd;
                     });
@@ -145,7 +156,7 @@
                         maxRadius = maxRadius + (self.baseRadius * self.radiusIncrementFactor);
                         ctr = ctr + 1;
                     }
-                    return maxRadius;
+                    return maxRadius + 10 * maxIncrements;
                 }
 
                 self.getContainerWidth = function () {
@@ -184,7 +195,7 @@
                             'y': 10
                         };
                         _quadrant['NW'] = _quadrant['SW'] = {
-                                'x': centerXY.x - _rad - _gap,
+                            'x': centerXY.x - _rad - _gap,
                             'y': 10
                         };
                         return _quadrant;
@@ -207,16 +218,19 @@
                     var _minBoxHeight = 50;
 
                     var _pieCopiesForLabel = _.map(angular.copy(self.generatedPies), function (_pieSlice, key) {
-                        return {
-                            'midXY': _pieSlice.midXY,
-                            'midDeg': _pieSlice.midDeg,
-                            'offsetMidXY': _pieSlice.offsetMidXY,
-                            'priority': _pieSlice.priority,
-                            'rad':_pieSlice.rad,
-                            'id': _pieSlice.id,
-                            'title':_pieSlice.title,
-                            'side': _pieSlice.midXY.x == self.centerXY.x ? 0 : (_pieSlice.midXY.x > self.centerXY.x ? 1 : -1)
-                        }
+                        if (_pieSlice.nobox != true)
+                            return {
+                                'midXY': _pieSlice.midXY,
+                                'midDeg': _pieSlice.midDeg,
+                                'offsetMidXY': _pieSlice.offsetMidXY,
+                                'priority': _pieSlice.priority,
+                                'rad': _pieSlice.rad,
+                                'id': _pieSlice.id,
+                                'title': _pieSlice.title,
+                                'side': _pieSlice.midXY.x == self.centerXY.x ? 0 : (_pieSlice.midXY.x > self.centerXY.x ? 1 : -1)
+                            }
+                        else
+                            return {};
                     });
 
                     /* GET MID POINTS IN RIGHT HEMISPHERE OR side == 1*/
@@ -239,7 +253,7 @@
                                 else if (_quadKey == 'SE') {
                                     calculatedOffset = self._generateCoordinates(_pie.midDeg, _pie.rad + 30 + _radFix, self.centerXY);
                                     _offsetXY = calculatedOffset;
-                                }                                
+                                }
                             }
                         }
                         var _midpoint = { 'x': _baseXY.x, 'y': _offsetXY.y };
@@ -279,27 +293,36 @@
                     });
 
                     _.each(self.generatedPies, function (pie) {
-                        var _side = pie.midXY.x == self.centerXY.x ? 0 : (pie.midXY.x > self.centerXY.x ? 1 : -1);
-                        if (_side == 1) {
-                            var _approPie = _.find(_pieCopiesRight, function (_pieRight) { return _pieRight.id == pie.id });
-                            if (typeof _approPie !== 'undefined') {
-                                pie.ptr = _approPie._ptr;
-                                pie.colorBox = _approPie.colorBox;
-                                pie.textBox = _approPie.textBox;
-                                pie.fillOpacity = 1;
+                        if (pie.nobox != true) {
+                            var _side = pie.midXY.x == self.centerXY.x ? 0 : (pie.midXY.x > self.centerXY.x ? 1 : -1);
+                            if (_side == 1) {
+                                var _approPie = _.find(_pieCopiesRight, function (_pieRight) { return _pieRight.id == pie.id });
+                                if (typeof _approPie !== 'undefined') {
+                                    pie.ptr = _approPie._ptr;
+                                    pie.colorBox = _approPie.colorBox;
+                                    pie.textBox = _approPie.textBox;
+                                    pie.fillOpacity = 1;
+                                }
                             }
-                        }
-                        else if (_side == -1) {
-                            var _approPie = _.find(_pieCopiesLeft, function (_pieRight) { return _pieRight.id == pie.id });
-                            if (typeof _approPie !== 'undefined') {
-                                pie.ptr = _approPie._ptr;
-                                pie.colorBox = _approPie.colorBox;
-                                pie.textBox = _approPie.textBox;
-                                pie.fillOpacity = 1;
+                            else if (_side == -1) {
+                                var _approPie = _.find(_pieCopiesLeft, function (_pieRight) { return _pieRight.id == pie.id });
+                                if (typeof _approPie !== 'undefined') {
+                                    pie.ptr = _approPie._ptr;
+                                    pie.colorBox = _approPie.colorBox;
+                                    pie.textBox = _approPie.textBox;
+                                    pie.fillOpacity = 1;
+                                }
                             }
                         }
                     });
 
+                }
+
+                self.hoverPie = function (pie) {
+                    if (pie.nobox != true)
+                        return '#000000';
+                    else
+                        return pie.color;
                 }
 
                 self._startGenerating = function (slices) {
