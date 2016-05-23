@@ -61,14 +61,10 @@
                     var _degStart = 0;
                     _.each(_origPie, function (_slice, peiceIter) {
                         //radius for this iteration
-                        var _ctr = 0;
-                        var _rad = self.baseRadius;
+                        var _rad = _parentPiece != null ? _parentPiece.rad : self.baseRadius;
                         var _tempRad = self.baseRadius;
-                        while (_ctr < itr - 1) {
-                            _tempRad = _tempRad * self.radiusIncrementFactor;
-                            _rad = _rad + _tempRad;
-                            _ctr = _ctr + 1;
-                        }
+                        _(itr - 2).times(function (n) { _tempRad = self.radiusIncrementFactor * _tempRad });
+                        _rad = _rad + _tempRad;
                         //calculate degree for arc
                         var _netMulFactor = 360;
                         if (typeof _parentPiece !== 'undefined' && _parentPiece != null && typeof _parentPiece.deg !== 'undefined' && _parentPiece.deg != null)
@@ -120,14 +116,17 @@
                         delete _copy.child;
                         self.generatedPies.push(_copy);
                         if (typeof _slice.child !== 'undefined' && _slice.child != {} && _slice.child.length > 0) {
-                            var _mrad = _slice.rad + 5;
+                            var _tempRad = self.baseGap;
+                            _(itr - 2).times(function (n) { _tempRad = _tempRad + self.gapIncrementFactor * self.baseGap });
+                            var _mrad = _slice.rad + _tempRad;
+                            _slice.rad = _slice.rad + _tempRad;
                             var _md = 'M ' + self.centerXY.x + ' ' + self.centerXY.y
                                 + ' m ' + (-_mrad) + ' ' + 0
                                 + ' a ' + _mrad + ' ' + _mrad + ' 0 1 1 ' + (_mrad * 2) + ' 0'
                                 + ' a ' + _mrad + ' ' + _mrad + ' 0 1 1 ' + (-(_mrad * 2)) + ' 0';
                             var _mpath = { 'd': _md };
                             _mpath.priority = itr + 1;
-                            _mpath.activecolor = _mpath.color = '#ffffff';
+                            _mpath.activecolor = _mpath.color = self.gapColor;
                             _mpath.nobox = true;
                             self.generatedPies.push(_mpath);
                             self._generatePies(_slice.child, itr + 2, _slice);
@@ -147,7 +146,7 @@
                     });
                     return len;
                 }
-
+                
                 self._calMaxRadius = function (slices) {
                     var maxIncrements = self._calDeepLength(slices);
                     var maxRadius = self.baseRadius;
@@ -156,7 +155,13 @@
                         maxRadius = maxRadius + (self.baseRadius * self.radiusIncrementFactor);
                         ctr = ctr + 1;
                     }
-                    return maxRadius + 10 * maxIncrements;
+                    var _gapWidth = self.baseGap;
+                    var _increment = _gapWidth;
+                    _(maxIncrements).times(function (n) {                        
+                        _(n).times(function (x) { _increment = _increment + self.gapIncrementFactor * self.baseGap });
+                        _gapWidth = _gapWidth + _increment;
+                    });
+                    return maxRadius + _gapWidth + 20;
                 }
 
                 self.getContainerWidth = function () {
@@ -345,6 +350,9 @@
                     this.gapToLabel = angular.copy(self.config.gapToLabel) || 60;
                     this.strokeColor = angular.copy(self.config.strokeColor) || '#fff';
                     this.strokeWidth = angular.copy(self.config.strokeWidth) || 0;
+                    this.baseGap = angular.copy(self.config.baseGap) || 0;
+                    this.gapIncrementFactor = angular.copy(self.config.gapIncrementFactor) || 0;
+                    this.gapColor = angular.copy(self.config.gapColor) || '#fff';
                     this.showLabels = angular.copy(self.config.showLabels);
                     this.showStrokeCircleAtCenter = angular.copy(self.config.showStrokeCircleAtCenter);
                     self.coordinates = {};

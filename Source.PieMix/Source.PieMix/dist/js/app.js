@@ -61,12 +61,15 @@
     self.pieDataSample2 = pieData1;
 
     self.config = {
-        'baseRadius': 80,
-        'radiusIncrementFactor': 0.66,
+        'baseRadius': 50,
+        'radiusIncrementFactor': 0.80,
+        'baseGap': 4,
+        'gapIncrementFactor': 1.33,
         'gapToLabel': 60,
         'strokeWidth': 3,
         'showLabels': true,
-        'strokeColor': '#fff',
+        'strokeColor': '#f0f0f0',
+        'gapColor':'#f0f0f0',
         'showStrokeCircleAtCenter': true
     }
 
@@ -76,12 +79,15 @@
     }
 
     self.config2 = {
-        'baseRadius': 80,
-        'radiusIncrementFactor': 0.50,
+        'baseRadius': 50,
+        'radiusIncrementFactor': 0.80,
+        'baseGap': 0,
+        'gapIncrementFactor': 2,
         'gapToLabel': 60,
         'strokeWidth': 0,
         'showLabels': true,
-        'strokeColor': '#fff',
+        'strokeColor': '#f0f0f0',
+        'gapColor': '#f0f0f0',
         'showStrokeCircleAtCenter': true
     }
 
