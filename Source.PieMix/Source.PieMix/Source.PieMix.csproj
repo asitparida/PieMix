@@ -66,6 +66,11 @@
     <Reference Include="System.EnterpriseServices" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="images\1.PNG" />
+    <Content Include="images\2.png" />
+    <Content Include="images\3.png" />
+    <Content Include="images\4.png" />
+    <Content Include="images\5.png" />
     <Content Include="lib\angular-animate.min.js" />
     <Content Include="lib\ui-bootstrap-tpls-1.1.1.js" />
     <Content Include="lib\ui-bootstrap-tpls-1.1.1.min.js" />
@@ -80,6 +85,8 @@
     <Content Include="dist\min\fonts\glyphicons-halflings-regular.ttf" />
     <Content Include="dist\min\fonts\glyphicons-halflings-regular.woff" />
     <Content Include="dist\min\fonts\glyphicons-halflings-regular.woff2" />
+    <None Include="Properties\PublishProfiles\piemixsample - FTP.pubxml" />
+    <None Include="Properties\PublishProfiles\piemixsample - Web Deploy.pubxml" />
     <None Include="Properties\PublishProfiles\piemixsample.pubxml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>

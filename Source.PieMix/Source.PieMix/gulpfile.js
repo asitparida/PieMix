@@ -6,7 +6,8 @@
     cssmin = require('gulp-cssmin'),
     del = require('del'),
     html2js = require('gulp-html-js-template'),
-    minify = require('gulp-minify');
+    minify = require('gulp-minify'),
+    plato = require('plato');
 
 gulp.task('styles', function () {
     gulp.src('scss/*.scss')
@@ -30,41 +31,6 @@ var resolveMinifiedPath = function (path) {
     };
 }
 
-// Clean the distributable html directory
-//gulp.task('minify:clean:html:js', function () {
-//    return del('Resource/vx-grid-templates.js');
-//});
-
-//gulp.task('minify:html:js', ['minify:clean:html:js'], function () {
-//    return gulp.src('Resource/vx-grid-templates.html')
-//	.pipe(html2js())
-//	.pipe(gulp.dest('Resource'));
-//});
-
-// Minify JS Files
-//gulp.task('minify:js', ['minify:html:js'], function () {
-//    return gulp.src('Resource/*.js')
-//    .pipe(minify())
-//    .pipe(gulp.dest('js'))
-//});
-
-// Clean the concated js directory
-//gulp.task('clean:concat:js', function () {
-//    return del('dist/min/js/vx.grid.all.min.js');
-//});
-
-//Concat JS Files
-//gulp.task('concat:js', ['clean:concat:js', 'minify:js'], function () {
-//    return gulp.src('./js/*min.js')
-//    .pipe(concat('vx.grid.all.min.js'))
-//    .pipe(gulp.dest('./dist/min/js'));
-//});
-
-//Watch JS task
-//gulp.task('default:vxgrid:js', function () {
-//    gulp.watch(['Resource/vx-grid.js', 'Resource/vx-grid-templates.html'], ['concat:js']);
-//});
-
 // Clean the distributable css directory
 gulp.task('minify:clean:css', function () {
     return del('css/');
@@ -83,7 +49,7 @@ gulp.task('minify:css', ['minify:clean:css'], function () {
 });
 
 //Watch CSS task
-gulp.task('default:richcc:css', function () {
+gulp.task('default:piemix:css', function () {
     gulp.watch('scss/*.scss', ['minify:css']);
 });
 
@@ -117,6 +83,19 @@ gulp.task('concat:js', ['clean:concat:js', 'minify:js'], function () {
     return gulp.src('./js/*min.js')
     .pipe(concat('piemix.min.js'))
     .pipe(gulp.dest('./dist/min/js'));
+});
+
+//Plato Tasks
+gulp.task('plato:js', function () {
+    try {
+        return plato.inspect(['resource/*.js'],
+            'plato-reports/',
+            {}, function (report) {
+                /* analyse report */
+            });
+    } catch (e) {
+        console.log(e);
+    }
 });
 
 //Watch JS task
